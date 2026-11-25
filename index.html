@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VISIT 홈페이지 리뉴얼 시안 — 3D 공간</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+  body { margin: 0; min-height: 100vh; background: #00060C; color: #fff; font-family: Pretendard, 'Pretendard Variable', 'Noto Sans KR', sans-serif; font-size: 18px; line-height: 27px; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: clamp(32px, 8vw, 96px) clamp(20px, 5vw, 48px); display: flex; flex-direction: column; gap: 40px; }
+  img { height: 30px; width: auto; display: block; }
+  .eyebrow { margin: 0; font-family: Poppins, sans-serif; font-weight: 600; color: #FF004D; }
+  h1 { margin: 8px 0 0; font-size: clamp(32px, 5vw, 52px); line-height: 1.25; font-weight: 700; letter-spacing: -0.01em; }
+  p { margin: 0; color: rgba(255,255,255,.82); }
+  ul { margin: 0; padding: 0; list-style: none; }
+  li { border-top: 1px solid rgba(255,255,255,.22); }
+  li:last-child { border-bottom: 1px solid rgba(255,255,255,.22); }
+  a { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 20px; padding: 22px 0; color: #fff; text-decoration: none; }
+  a:hover .name, a:focus-visible .name { color: #FFA2BE; }
+  a:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+  .num { font-family: Poppins, sans-serif; font-weight: 500; font-size: 14px; color: #979797; width: 28px; }
+  .name { font-size: 24px; line-height: 32px; font-weight: 700; }
+  .desc { flex: 1 1 280px; font-size: 16px; color: #979797; }
+  footer { font-size: 14px; line-height: 21px; color: #979797; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <img src="./visit-logo-white.svg" alt="VISIT">
+  <header>
+    <p class="eyebrow">Homepage Renewal · 3D Space</p>
+    <h1>홈페이지 리뉴얼 시안</h1>
+  </header>
+  <p>360 이미지 기반 VR 공간 웹이라는 사업을, 홈페이지 자체가 하나의 3D 공간이 되는 방식으로 보여주는 시안입니다. 색·서체·버튼 규칙은 현재 visitinc.kr에서 가져왔습니다.</p>
+  <ul>
+    <li><a href="./a-space-tour.html"><span class="num">A</span><span class="name">360 공간 투어</span><span class="desc">폴리곤 구 안에서 핫스팟으로 7개 섹션을 이동하는 메인 전체</span></a></li>
+    <li><a href="./a-space-tour-mobile.html"><span class="num">A′</span><span class="name">360 공간 투어 · 모바일</span><span class="desc">390×844 기준 화면과 전체 화면 메뉴</span></a></li>
+    <li><a href="./b-walkthrough.html"><span class="num">B</span><span class="name">워크스루</span><span class="desc">실내·실외 프레임을 통과하며 앞으로 걸어가는 히어로 대안</span></a></li>
+    <li><a href="./c-panorama-unfold.html"><span class="num">C</span><span class="name">파노라마 언폴드</span><span class="desc">2:1 파노라마가 구로 말려 올라가는 히어로 대안</span></a></li>
+  </ul>
+  <footer>디자인 시안이며 실제 서비스 화면이 아닙니다. 버튼과 메뉴 링크는 연결되어 있지 않습니다.</footer>
+</div>
+</body>
+</html>

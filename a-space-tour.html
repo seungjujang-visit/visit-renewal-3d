@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>VISIT 메인 — 360 공간 투어</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./dc-lite.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&amp;family=Noto+Sans+KR:wght@400;500;700&amp;display=swap">
+<style>
+body{margin:0;background:#00060C}
+a{color:#ffffff;text-decoration:none}a:hover{color:#FFA2BE}
+button{font-family:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:2px solid #ffffff;outline-offset:3px}
+@keyframes vrise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.vrise{animation:vrise .8s cubic-bezier(.2,.7,.2,1) both}
+@media (prefers-reduced-motion:reduce){.vrise{animation:none}}
+@media (max-width:860px){.v-hide-sm{display:none !important}}
+</style>
+</helmet>
+<div onWheel="{{ onWheel }}" style="position: relative; height: 100vh; min-height: 720px; overflow: hidden; background: #00060C; color: #ffffff; font-family: Pretendard, 'Pretendard Variable', 'Noto Sans KR', sans-serif; font-size: 18px; line-height: 27px">
+
+  <canvas data-stage="visit" ref="{{ setCanvas }}" onPointerDown="{{ onDown }}" onPointerMove="{{ onMove }}" onPointerUp="{{ onUp }}" onPointerLeave="{{ onLeave }}" role="img" aria-label="다면체로 이루어진 360도 가상 공간. 드래그해 둘러보고 핫스팟을 눌러 섹션으로 이동합니다." style="position: absolute; left: 0px; top: 0px; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab"></canvas>
+
+  <header style="position: absolute; left: 0; right: 0; top: 0; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 28px clamp(20px, 5vw, 72px); pointer-events: none">
+    <a href="#" aria-label="VISIT 홈" style="display: flex; align-items: center; min-height: 44px; pointer-events: auto">
+      <img src="./visit-logo-white.svg" alt="VISIT" style="height: 30px; width: auto; display: block">
+    </a>
+    <nav class="v-hide-sm" aria-label="주 메뉴" style="display: flex; align-items: center; gap: 44px; font-family: Poppins, sans-serif; font-weight: 500; font-size: 18px; pointer-events: auto">
+      <a href="#" style="color: {{accent}}; min-height: 44px; display: flex; align-items: center">Main</a>
+      <a href="#" style="min-height: 44px; display: flex; align-items: center">Business</a>
+      <a href="#" style="min-height: 44px; display: flex; align-items: center">Shop</a>
+      <a href="#" style="min-height: 44px; display: flex; align-items: center">Newsroom</a>
+      <a href="#" style="min-height: 44px; display: flex; align-items: center">Team</a>
+    </nav>
+    <div style="display: flex; align-items: center; gap: 10px; font-family: Poppins, sans-serif; font-weight: 500; font-size: 16px; pointer-events: auto">
+      <a href="#" style="min-height: 44px; display: flex; align-items: center">KR</a>
+      <span aria-hidden="true" style="color: #979797">|</span>
+      <a href="#" style="color: #979797; min-height: 44px; display: flex; align-items: center">EN</a>
+    </div>
+  </header>
+
+  <nav class="v-hide-sm" aria-label="공간 이동" style="position: absolute; right: clamp(20px, 5vw, 72px); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: flex-end; gap: 2px">
+    <sc-for list="{{ index }}" as="item" hint-placeholder-count="7">
+      <button type="button" onClick="{{ item.go }}" aria-current="{{ item.current }}" style="display: flex; align-items: center; justify-content: flex-end; gap: 12px; min-height: 44px; padding: 0; border: 0; background: transparent; color: {{ item.color }}; font-family: Poppins, sans-serif; font-weight: 500; font-size: 14px; letter-spacing: 0.04em">
+        <span>{{ item.num }}</span>
+        <span>{{ item.label }}</span>
+        <span aria-hidden="true" style="display: block; height: 1px; width: {{ item.line }}; background: {{ item.color }}; transition: width .5s ease"></span>
+      </button>
+    </sc-for>
+  </nav>
+
+  <main style="position: absolute; left: clamp(20px, 5vw, 72px); bottom: 148px; width: min(620px, calc(100% - 40px)); pointer-events: none">
+
+    <sc-if value="{{ s0 }}" hint-placeholder-val="{{ true }}">
+      <section class="vrise" style="display: flex; flex-direction: column; gap: 28px; animation-delay: .35s">
+        <h1 style="margin: 0; font-size: clamp(38px, 4.8vw, 68px); line-height: 1.22; font-weight: 700; letter-spacing: -0.01em">당신의 모든 이동이<br>정보가 되는 곳, <span style="color: {{accent}}">VISIT</span></h1>
+        <p style="margin: 0; max-width: 460px; color: rgba(255,255,255,0.82)">전 세계 실내외 어디든, 내 걸음이 닿는 모든 공간을 실시간으로 빠르게, 360도로 다채롭게.</p>
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px; pointer-events: auto">
+          <a href="#" style="display: inline-flex; align-items: center; gap: 6px; min-height: 52px; padding: 0 28px; border-radius: 999px; background: #ffffff; color: #212324; font-weight: 700; font-size: 18px"><span style="color: #D6003F">360VR</span> 서비스 보러가기</a>
+          <span style="display: inline-flex; align-items: center; gap: 10px; font-size: 15px; color: #979797">
+            <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><ellipse cx="12" cy="12" rx="9" ry="3.6"></ellipse><path d="M12 3v18"></path></svg>
+            드래그해 둘러보고, 핫스팟을 눌러 이동하세요
+          </span>
+        </div>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ s1 }}" hint-placeholder-val="{{ false }}">
+      <section class="vrise" style="display: flex; flex-direction: column; gap: 20px; animation-delay: .35s">
+        <h2 style="margin: 0; font-family: Poppins, sans-serif; font-size: 18px; line-height: 27px; font-weight: 600; color: {{accent}}">We're</h2>
+        <p style="margin: 0; font-size: clamp(34px, 4vw, 56px); line-height: 1.25; font-weight: 700; letter-spacing: -0.01em">공간과 데이터가<br>만나다.</p>
+        <p style="margin: 0; max-width: 520px; color: rgba(255,255,255,0.82)">비지트는 공간을 다양한 데이터와 연계하여 새로운 공간정보의 가치를 창출해 내고자 합니다. 실내와 실외, 공간에 대한 경계를 허물어 다양한 정보를 제공할 수 있도록 도와주는 지도 제작 플랫폼을 제공합니다.</p>
+        <div style="pointer-events: auto"><a href="#" style="display: inline-flex; align-items: center; min-height: 51px; padding: 0 24px; border-radius: 8px; background: {{accent}}; color: #ffffff; font-weight: 700; font-size: 18px">더보기</a></div>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ s2 }}" hint-placeholder-val="{{ false }}">
+      <section class="vrise" style="display: flex; flex-direction: column; gap: 20px; animation-delay: .35s">
+        <h2 style="margin: 0; font-family: Poppins, sans-serif; font-size: 18px; line-height: 27px; font-weight: 600; color: {{accent}}">Service</h2>
+        <p style="margin: 0; font-size: clamp(32px, 3.8vw, 54px); line-height: 1.25; font-weight: 700; letter-spacing: -0.01em">스마트폰만으로 제작 가능한<br>지도 제작 플랫폼</p>
+        <p style="margin: 0; max-width: 520px; color: rgba(255,255,255,0.82)">스마트폰 하나만으로 누구나 360VR 촬영이 가능한 ‘라운드픽’ 서비스를 제공합니다. 한국, 싱가포르, 태국 3개국에 서비스를 런칭하였으며 다국어를 지원합니다.</p>
+        <ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 10px; font-family: Poppins, sans-serif; font-weight: 500; font-size: 14px; letter-spacing: 0.08em">
+          <li style="padding: 6px 14px; border: 1px solid rgba(255,255,255,0.4); border-radius: 999px">KOREA</li>
+          <li style="padding: 6px 14px; border: 1px solid rgba(255,255,255,0.4); border-radius: 999px">SINGAPORE</li>
+          <li style="padding: 6px 14px; border: 1px solid rgba(255,255,255,0.4); border-radius: 999px">THAILAND</li>
+        </ul>
+        <div style="pointer-events: auto"><a href="#" style="display: inline-flex; align-items: center; min-height: 51px; padding: 0 24px; border-radius: 8px; background: {{accent}}; color: #ffffff; font-weight: 700; font-size: 18px">더보기</a></div>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ s3 }}" hint-placeholder-val="{{ false }}">
+      <section class="vrise" style="display: flex; flex-direction: column; gap: 20px; animation-delay: .35s">
+        <h2 style="margin: 0; font-family: Poppins, sans-serif; font-size: 18px; line-height: 27px; font-weight: 600; color: {{accent}}">Technology</h2>
+        <p style="margin: 0; font-size: clamp(32px, 3.8vw, 54px); line-height: 1.25; font-weight: 700; letter-spacing: -0.01em">특허 개발과 기술 확보를 위한<br>끊임없는 노력</p>
+        <p style="margin: 0; max-width: 520px; color: rgba(255,255,255,0.82)">국내외 특허를 다량 보유하고 있는 비지트는 기업부설연구소의 전문 연구개발자들과 함께 AI 및 360 VR 기술을 개발하고 있습니다.</p>
+        <div style="display: flex; align-items: baseline; gap: 12px">
+          <span style="font-size: 56px; line-height: 1; font-weight: 700">28<span style="font-size: 24px">개</span></span>
+          <span style="font-size: 15px; color: #979797">국내외 기술 특허 등록 · Google Map 공식 Provider</span>
+        </div>
+        <div style="pointer-events: auto"><a href="#" style="display: inline-flex; align-items: center; min-height: 51px; padding: 0 24px; border-radius: 8px; background: {{accent}}; color: #ffffff; font-weight: 700; font-size: 18px">더보기</a></div>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ s4 }}" hint-placeholder-val="{{ false }}">
+      <section class="vrise" style="display: flex; flex-direction: column; gap: 20px; animation-delay: .35s">
+        <h2 style="margin: 0; font-family: Poppins, sans-serif; font-size: 18px; line-height: 27px; font-weight: 600; color: {{accent}}">Growth</h2>
+        <p style="margin: 0; font-size: clamp(30px, 3.4vw, 48px); line-height: 1.25; font-weight: 700; letter-spacing: -0.01em">우리는 매일<br>새로운 내일을 만들어갑니다.</p>
+        <dl style="margin: 8px 0 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 40px">
+          <div style="display: flex; flex-direction: column; gap: 6px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.22)">
+            <dt style="font-size: 15px; line-height: 22px; color: #979797">누적 콘텐츠 · 2026 Q1</dt>
+            <dd style="margin: 0; font-size: 44px; line-height: 1.1; font-weight: 700">1,219<span style="font-size: 22px">만건</span></dd>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.22)">
+            <dt style="font-size: 15px; line-height: 22px; color: #979797">누적 투자금액</dt>
+            <dd style="margin: 0; font-size: 44px; line-height: 1.1; font-weight: 700">11<span style="font-size: 22px">억+</span></dd>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.22)">
+            <dt style="font-size: 15px; line-height: 22px; color: #979797">작년도 대비 성장률</dt>
+            <dd style="margin: 0; font-size: 44px; line-height: 1.1; font-weight: 700">130<span style="font-size: 22px">%</span></dd>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.22)">
+            <dt style="font-size: 15px; line-height: 22px; color: #979797">국내 민간 지도 공급</dt>
+            <dd style="margin: 0; font-size: 44px; line-height: 1.1; font-weight: 700">최초</dd>
+          </div>
+        </dl>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ s5 }}" hint-placeholder-val="{{ false }}">
+      <section class="vrise" style="display: flex; flex-direction: column; gap: 20px; animation-delay: .35s">
+        <h2 style="margin: 0; font-family: Poppins, sans-serif; font-size: 18px; line-height: 27px; font-weight: 600; color: {{accent}}">Newsroom</h2>
+        <p style="margin: 0; font-size: clamp(30px, 3.4vw, 48px); line-height: 1.25; font-weight: 700; letter-spacing: -0.01em">VISIT의 최신 소식을<br>공유합니다.</p>
+        <ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; pointer-events: auto">
+          <li style="border-top: 1px solid rgba(255,255,255,0.22)"><a href="#" style="display: flex; flex-direction: column; gap: 2px; padding: 14px 0"><span style="font-family: Poppins, sans-serif; font-weight: 500; font-size: 14px; color: #979797">2026.11.20</span><span style="font-weight: 500">비지트, 싱가포르 전시 디자인 기업 MANMANHAN과 MOU 체결</span></a></li>
+          <li style="border-top: 1px solid rgba(255,255,255,0.22)"><a href="#" style="display: flex; flex-direction: column; gap: 2px; padding: 14px 0"><span style="font-family: Poppins, sans-serif; font-weight: 500; font-size: 14px; color: #979797">2026.11.06</span><span style="font-weight: 500">싱가포르 ‘ITB Asia 2026’ 참가… 360VR·로봇 기반 공간정보 기술 선보여</span></a></li>
+          <li style="border-top: 1px solid rgba(255,255,255,0.22)"><a href="#" style="display: flex; flex-direction: column; gap: 2px; padding: 14px 0"><span style="font-family: Poppins, sans-serif; font-weight: 500; font-size: 14px; color: #979797">2026.09.08</span><span style="font-weight: 500">강원대기술지주·트리거투자파트너스 등과 시리즈A 투자 계약</span></a></li>
+        </ul>
+        <div style="pointer-events: auto"><a href="#" style="display: inline-flex; align-items: center; min-height: 51px; padding: 0 24px; border-radius: 8px; background: {{accent}}; color: #ffffff; font-weight: 700; font-size: 18px">더보기</a></div>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ s6 }}" hint-placeholder-val="{{ false }}">
+      <section class="vrise" style="display: flex; flex-direction: column; gap: 20px; animation-delay: .35s">
+        <h2 style="margin: 0; font-family: Poppins, sans-serif; font-size: 18px; line-height: 27px; font-weight: 600; color: {{accent}}">Contact</h2>
+        <p style="margin: 0; font-family: Poppins, sans-serif; font-size: clamp(30px, 3.8vw, 54px); line-height: 1.2; font-weight: 600; pointer-events: auto"><a href="mailto:info@visitinc.kr">info@visitinc.kr</a></p>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; pointer-events: auto">
+          <a href="#" style="display: inline-flex; align-items: center; min-height: 51px; padding: 0 24px; border-radius: 8px; background: {{accent}}; color: #ffffff; font-weight: 700; font-size: 18px">1:1 문의하기</a>
+          <a href="#" style="display: inline-flex; align-items: center; gap: 6px; min-height: 51px; padding: 0 24px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.6); font-weight: 700; font-size: 18px">360VR 서비스 보러가기</a>
+        </div>
+        <address style="margin: 8px 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; font-style: normal; font-size: 14px; line-height: 21px; color: rgba(255,255,255,0.82)">
+          <div style="display: flex; flex-direction: column; gap: 6px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.22)"><strong style="color: #ffffff">본사</strong><span>강원특별자치도 원주시 지정면 신평석화로 236-1, 1동</span></div>
+          <div style="display: flex; flex-direction: column; gap: 6px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.22)"><strong style="color: #ffffff">기업부설연구소</strong><span>서울 영등포구 여의대로 8, A2002호</span></div>
+          <div style="display: flex; flex-direction: column; gap: 6px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.22)"><strong style="color: #ffffff">싱가폴 법인</strong><span>1 Raffles Place, #20-02 One Raffles Place, Singapore</span></div>
+        </address>
+      </section>
+    </sc-if>
+
+  </main>
+
+  <footer style="position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 32px; padding: 0 clamp(20px, 5vw, 72px) 36px; pointer-events: none">
+    <div style="display: flex; align-items: baseline; gap: 14px; font-family: Poppins, sans-serif; font-weight: 500">
+      <span style="font-size: 40px; line-height: 1">{{ num }}</span>
+      <span aria-hidden="true" style="display: block; width: 48px; height: 1px; background: rgba(255,255,255,0.5); align-self: center"></span>
+      <span style="font-size: 16px; color: #979797">07</span>
+      <span class="v-hide-sm" style="margin-left: 18px; font-size: 14px; letter-spacing: 0.08em; color: #979797">SCROLL · DRAG · CLICK</span>
+    </div>
+    <div style="display: flex; align-items: flex-end; gap: 40px; pointer-events: auto">
+      <button type="button" onClick="{{ prev }}" style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px; min-width: 120px; min-height: 52px; padding: 0 0 10px; border: 0; border-bottom: 1px solid rgba(255,255,255,0.7); background: transparent; color: #ffffff; text-align: left">
+        <span style="font-family: Poppins, sans-serif; font-weight: 500; font-size: 18px">Prev</span>
+        <span style="font-family: Poppins, sans-serif; font-weight: 500; font-size: 13px; color: #979797">{{ prevLabel }}</span>
+      </button>
+      <button type="button" onClick="{{ next }}" style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px; min-width: 120px; min-height: 52px; padding: 0 0 10px; border: 0; border-bottom: 1px solid {{accent}}; background: transparent; color: #ffffff; text-align: right">
+        <span style="font-family: Poppins, sans-serif; font-weight: 500; font-size: 18px">Next</span>
+        <span style="font-family: Poppins, sans-serif; font-weight: 500; font-size: 13px; color: #979797">{{ nextLabel }}</span>
+      </button>
+    </div>
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#FF004D","options":["#FF004D","#FF5A1F","#FFFFFF"],"section":"브랜드"},"shatter":{"editor":"range","default":1,"min":0,"max":2,"step":0.1,"section":"3D 공간"},"density":{"editor":"enum","default":"보통","options":["낮음","보통","높음"],"section":"3D 공간"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  state = { scene: 0 };
+  N = 7;
+  names = ['Main', 'About', 'Service', 'Technology', 'Growth', 'Newsroom', 'Contact'];
+  pitches = [0, 0.10, -0.08, 0.12, -0.05, 0.09, 0];
+  scene = 0;
+  yaw = 0; pitch = 0; yawT = 0; pitchT = 0;
+  offY = 0; offP = 0; px = 0; py = 0;
+  cam = [0, 0, -0.4];
+  tChange = -1e9;
+  lastWheel = 0;
+  drag = null;
+  hs = [];
+  faces = null;
+  builtFor = null;
+
+  yawOf(i) { return i * Math.PI * 2 / this.N; }
+  dirOf(i) {
+    const y = this.yawOf(i), p = this.pitches[i];
+    return [Math.sin(y) * Math.cos(p), Math.sin(p), Math.cos(y) * Math.cos(p)];
+  }
+
+  go(i) {
+    i = ((i % this.N) + this.N) % this.N;
+    if (i === this.scene) return;
+    const two = Math.PI * 2;
+    let d = (this.yawOf(i) - this.yawT) % two;
+    if (d > Math.PI) d -= two;
+    if (d < -Math.PI) d += two;
+    this.yawT += d;
+    this.pitchT = this.pitches[i];
+    this.offY = 0; this.offP = 0;
+    this.scene = i;
+    this.tChange = performance.now();
+    this.setState({ scene: i });
+  }
+
+  build(level) {
+    const norm = (v) => { const l = Math.hypot(v[0], v[1], v[2]); return [v[0] / l, v[1] / l, v[2] / l]; };
+    const t = (1 + Math.sqrt(5)) / 2;
+    let V = [[-1, t, 0], [1, t, 0], [-1, -t, 0], [1, -t, 0], [0, -1, t], [0, 1, t], [0, -1, -t], [0, 1, -t], [t, 0, -1], [t, 0, 1], [-t, 0, -1], [-t, 0, 1]].map(norm);
+    let F = [[0, 11, 5], [0, 5, 1], [0, 1, 7], [0, 7, 10], [0, 10, 11], [1, 5, 9], [5, 11, 4], [11, 10, 2], [10, 7, 6], [7, 1, 8], [3, 9, 4], [3, 4, 2], [3, 2, 6], [3, 6, 8], [3, 8, 9], [4, 9, 5], [2, 4, 11], [6, 2, 10], [8, 6, 7], [9, 8, 1]];
+    for (let s = 0; s < level; s++) {
+      const cache = {};
+      const mid = (a, b) => {
+        const k = a < b ? a + '_' + b : b + '_' + a;
+        if (cache[k] === undefined) {
+          V.push(norm([(V[a][0] + V[b][0]) / 2, (V[a][1] + V[b][1]) / 2, (V[a][2] + V[b][2]) / 2]));
+          cache[k] = V.length - 1;
+        }
+        return cache[k];
+      };
+      const F2 = [];
+      for (const f of F) {
+        const a = mid(f[0], f[1]), b = mid(f[1], f[2]), c = mid(f[2], f[0]);
+        F2.push([f[0], a, c], [f[1], b, a], [f[2], c, b], [a, b, c]);
+      }
+      F = F2;
+    }
+    const rnd = (i, k) => { const x = Math.sin(i * 12.9898 + k * 78.233) * 43758.5453; return x - Math.floor(x); };
+    this.faces = F.map((f, i) => {
+      const a = V[f[0]], b = V[f[1]], c = V[f[2]];
+      const ce = [(a[0] + b[0] + c[0]) / 3, (a[1] + b[1] + c[1]) / 3, (a[2] + b[2] + c[2]) / 3];
+      const n = norm(ce);
+      const rel = (v) => [v[0] - ce[0], v[1] - ce[1], v[2] - ce[2]];
+      return { c: ce, n: n, u: [rel(a), rel(b), rel(c)], r1: rnd(i, 1), r2: rnd(i, 2), r3: rnd(i, 3) };
+    });
+  }
+
+  hex(h) {
+    h = String(h || '#FF004D').replace('#', '');
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    const n = parseInt(h.slice(0, 6), 16);
+    if (isNaN(n)) return [255, 0, 77];
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+
+  componentDidMount() {
+    this.reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    const tick = (t) => {
+      this.raf = requestAnimationFrame(tick);
+      try { this.draw(t); } catch (e) { /* keep the page usable if drawing fails */ }
+    };
+    this.raf = requestAnimationFrame(tick);
+  }
+
+  componentWillUnmount() { cancelAnimationFrame(this.raf); }
+
+  draw(t) {
+    const cv = this.cv || document.querySelector('canvas[data-stage="visit"]');
+    if (!cv) return;
+    this.cv = cv;
+    const W = cv.clientWidth, H = cv.clientHeight;
+    if (!W || !H) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) {
+      cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    }
+    const dens = this.props.density || '보통';
+    const level = dens === '낮음' ? 1 : dens === '높음' ? 3 : 2;
+    if (this.builtFor !== level) { this.build(level); this.builtFor = level; }
+
+    const g = cv.getContext('2d');
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.fillStyle = '#00060C';
+    g.fillRect(0, 0, W, H);
+
+    const acc = this.hex(this.props.accent);
+    const shatter = this.props.shatter == null ? 1 : Number(this.props.shatter);
+    const s = this.scene;
+    const k = this.reduce ? 1 : 0.055;
+    this.yaw += (this.yawT + this.offY + this.px * 0.05 - this.yaw) * k;
+    this.pitch += (this.pitchT + this.offP - this.py * 0.035 - this.pitch) * k;
+    const cd = this.dirOf(s);
+    for (let i = 0; i < 3; i++) this.cam[i] += (-cd[i] * 0.4 - this.cam[i]) * (this.reduce ? 1 : 0.04);
+
+    const u = (t - this.tChange) / 1300;
+    const e = (!this.reduce && u >= 0 && u < 1) ? Math.pow(Math.sin(Math.PI * u), 1.4) * shatter : 0;
+
+    const wide = W > 900;
+    const cx = wide ? W * 0.62 : W * 0.5, cy = wide ? H * 0.47 : H * 0.34;
+    const foc = 0.5 * Math.max(W, H * 1.25) / Math.tan(40 * Math.PI / 180);
+    const cyw = Math.cos(this.yaw), syw = Math.sin(this.yaw), cp = Math.cos(this.pitch), sp = Math.sin(this.pitch);
+    const cam = this.cam;
+    const proj = (x, y, z) => {
+      x -= cam[0]; y -= cam[1]; z -= cam[2];
+      const x1 = x * cyw - z * syw, z1 = x * syw + z * cyw;
+      const y2 = y * cp - z1 * sp, z2 = y * sp + z1 * cp;
+      if (z2 < 0.08) return null;
+      return [cx + foc * x1 / z2, cy - foc * y2 / z2, z2];
+    };
+
+    // polygon shell
+    const list = [];
+    const faces = this.faces;
+    for (let i = 0; i < faces.length; i++) {
+      const f = faces[i], n = f.n, c = f.c;
+      const d = f.r1 * 0.55 * e + 0.025 * (0.5 + 0.5 * Math.sin(t * 0.0007 + f.r2 * 6.283));
+      const ang = e * (f.r2 - 0.5) * 5, ca = Math.cos(ang), sa = Math.sin(ang), sc = 1 - 0.3 * Math.min(e, 1);
+      const pts = [];
+      let ok = true, zs = 0;
+      for (let j = 0; j < 3; j++) {
+        const q = f.u[j];
+        const kx = n[1] * q[2] - n[2] * q[1], ky = n[2] * q[0] - n[0] * q[2], kz = n[0] * q[1] - n[1] * q[0];
+        const p = proj(c[0] * (1 - d) + (q[0] * ca + kx * sa) * sc, c[1] * (1 - d) + (q[1] * ca + ky * sa) * sc, c[2] * (1 - d) + (q[2] * ca + kz * sa) * sc);
+        if (!p) { ok = false; break; }
+        pts.push(p); zs += p[2];
+      }
+      if (!ok) continue;
+      const minX = Math.min(pts[0][0], pts[1][0], pts[2][0]), maxX = Math.max(pts[0][0], pts[1][0], pts[2][0]);
+      const minY = Math.min(pts[0][1], pts[1][1], pts[2][1]), maxY = Math.max(pts[0][1], pts[1][1], pts[2][1]);
+      if (maxX < 0 || minX > W || maxY < 0 || minY > H) continue;
+      list.push({ f: f, p: pts, z: zs / 3 });
+    }
+    list.sort((a, b) => b.z - a.z);
+    g.lineWidth = 1;
+    g.lineJoin = 'round';
+    for (let i = 0; i < list.length; i++) {
+      const it = list[i], f = it.f, p = it.p;
+      const dot = f.n[0] * cd[0] + f.n[1] * cd[1] + f.n[2] * cd[2];
+      const spot = dot > 0 ? Math.pow(dot, 6) : 0;
+      let L = (0.05 + 0.10 * f.r3 + 0.34 * spot + 0.22 * e * f.r1) * Math.max(0.35, 1.5 - it.z * 0.6);
+      if (L > 1) L = 1;
+      g.beginPath();
+      g.moveTo(p[0][0], p[0][1]); g.lineTo(p[1][0], p[1][1]); g.lineTo(p[2][0], p[2][1]); g.closePath();
+      g.fillStyle = 'rgb(' + Math.round(0 + 78 * L) + ',' + Math.round(6 + 84 * L) + ',' + Math.round(12 + 86 * L) + ')';
+      g.fill();
+      if (f.r3 > 0.93) {
+        g.fillStyle = 'rgba(' + acc[0] + ',' + acc[1] + ',' + acc[2] + ',' + Math.min(0.9, 0.12 + 0.3 * spot + 0.6 * e).toFixed(3) + ')';
+        g.fill();
+      }
+      g.strokeStyle = 'rgba(255,255,255,' + Math.min(0.5, 0.05 + 0.12 * spot + 0.22 * e).toFixed(3) + ')';
+      g.stroke();
+    }
+
+    // movement trail on the floor: every step becomes data
+    const two = Math.PI * 2;
+    const prog = ((this.yaw % two) + two) % two;
+    const M = 168;
+    for (let j = 0; j < M; j++) {
+      const th = j / M * two;
+      const p = proj(Math.sin(th) * 0.6, -0.4, Math.cos(th) * 0.6);
+      if (!p) continue;
+      const visited = th <= prog + 0.02;
+      const r = Math.max(0.8, Math.min(3.2, foc * 0.0032 / p[2]));
+      g.beginPath();
+      g.arc(p[0], p[1], visited ? r * 1.25 : r, 0, two);
+      g.fillStyle = visited ? 'rgba(' + acc[0] + ',' + acc[1] + ',' + acc[2] + ',0.95)' : 'rgba(255,255,255,0.3)';
+      g.fill();
+    }
+
+    // legibility scrim behind the copy
+    const sg = wide ? g.createLinearGradient(0, 0, W * 0.6, 0) : g.createLinearGradient(0, H, 0, H * 0.3);
+    sg.addColorStop(0, 'rgba(0,6,12,0.9)');
+    sg.addColorStop(0.55, 'rgba(0,6,12,0.55)');
+    sg.addColorStop(1, 'rgba(0,6,12,0)');
+    g.fillStyle = sg;
+    g.fillRect(0, 0, W, H);
+
+    // scene objects: each section brings its own data object into the space
+    const since = (t - this.tChange) / 1000;
+    const oa = this.reduce ? 1 : Math.max(0, Math.min(1, (since - 0.7) / 0.9));
+    if (oa > 0 && s > 0) this.objects(g, proj, s, cd, oa, t, foc, acc[0] + ',' + acc[1] + ',' + acc[2]);
+
+    // hotspots
+    this.hs = [];
+    g.textBaseline = 'middle';
+    for (let i = 0; i < this.N; i++) {
+      const dv = this.dirOf(i);
+      const p = proj(dv[0] * 0.9, dv[1] * 0.9, dv[2] * 0.9);
+      if (!p || p[0] < -60 || p[0] > W + 60) { this.hs.push(null); continue; }
+      const r = Math.max(6, Math.min(26, foc * 0.022 / p[2]));
+      const cur = i === s;
+      this.hs.push({ x: p[0], y: p[1], r: r });
+      if (cur) {
+        const pulse = this.reduce ? 0.5 : 0.5 + 0.5 * Math.sin(t * 0.003);
+        g.beginPath(); g.arc(p[0], p[1], r * (1.5 + 0.5 * pulse), 0, two);
+        g.strokeStyle = 'rgba(' + acc[0] + ',' + acc[1] + ',' + acc[2] + ',' + (0.75 - 0.5 * pulse).toFixed(3) + ')';
+        g.lineWidth = 1.5; g.stroke();
+        g.beginPath(); g.arc(p[0], p[1], r, 0, two);
+        g.strokeStyle = 'rgb(' + acc[0] + ',' + acc[1] + ',' + acc[2] + ')';
+        g.lineWidth = 2; g.stroke();
+        g.beginPath(); g.arc(p[0], p[1], r * 0.36, 0, two);
+        g.fillStyle = 'rgb(' + acc[0] + ',' + acc[1] + ',' + acc[2] + ')'; g.fill();
+      } else {
+        g.beginPath(); g.arc(p[0], p[1], r, 0, two);
+        g.strokeStyle = 'rgba(255,255,255,0.75)'; g.lineWidth = 1.5; g.stroke();
+        g.beginPath(); g.arc(p[0], p[1], r * 0.24, 0, two);
+        g.fillStyle = '#ffffff'; g.fill();
+      }
+      g.font = '500 13px Poppins, sans-serif';
+      g.fillStyle = cur ? '#ffffff' : 'rgba(255,255,255,0.8)';
+      g.fillText('0' + (i + 1) + '  ' + this.names[i], p[0] + r + 12, p[1]);
+    }
+  }
+
+  objects(g, proj, s, cd, oa, t, foc, accS) {
+    const two = Math.PI * 2;
+    const rl = Math.hypot(cd[2], cd[0]) || 1;
+    const rx = cd[2] / rl, rz = -cd[0] / rl;
+    // a = right of the hotspot, b = up, c = towards the wall
+    const at = (a, b, c) => proj(cd[0] * (0.9 + c) + rx * a, cd[1] * (0.9 + c) + b, cd[2] * (0.9 + c) + rz * a);
+    const rnd = (i, k) => { const x = Math.sin(i * 12.9898 + k * 78.233) * 43758.5453; return x - Math.floor(x); };
+    const white = (a) => 'rgba(255,255,255,' + (a * oa).toFixed(3) + ')';
+    const red = (a) => 'rgba(' + accS + ',' + (a * oa).toFixed(3) + ')';
+    const label = (txt, x, y, size, align) => {
+      g.font = '500 ' + size + 'px Poppins, sans-serif';
+      g.textAlign = align || 'left';
+      g.textBaseline = 'middle';
+      g.fillStyle = white(0.85);
+      g.fillText(txt, x, y);
+      g.textAlign = 'left';
+    };
+    const pins = (names) => {
+      const xs = [-0.42, 0, 0.42];
+      for (let i = 0; i < 3; i++) {
+        const top = at(xs[i], -0.17, -0.05), base = at(xs[i], -0.4, -0.05);
+        if (!top || !base) continue;
+        g.beginPath(); g.moveTo(base[0], base[1]); g.lineTo(base[0] + (top[0] - base[0]) * oa, base[1] + (top[1] - base[1]) * oa);
+        g.strokeStyle = white(0.6); g.lineWidth = 1; g.stroke();
+        const r = Math.max(4, foc * 0.012 / top[2]);
+        g.beginPath(); g.ellipse(base[0], base[1], r * 2.2, r * 0.7, 0, 0, two);
+        g.strokeStyle = red(0.9); g.lineWidth = 1.5; g.stroke();
+        g.beginPath(); g.arc(top[0], top[1], r, 0, two);
+        g.fillStyle = red(1); g.fill();
+        label(names[i], top[0] + r + 8, top[1], 12);
+      }
+    };
+
+    if (s === 1) {
+      // space meets data: data nodes linking into the place
+      const hp = at(0, 0, 0);
+      if (!hp) return;
+      for (let i = 0; i < 18; i++) {
+        const bob = 0.012 * Math.sin(t * 0.0012 + i);
+        const p = at((rnd(i, 1) - 0.5) * 1.2, (rnd(i, 2) - 0.5) * 0.72 + bob, -rnd(i, 3) * 0.4);
+        if (!p) continue;
+        g.beginPath(); g.moveTo(hp[0], hp[1]); g.lineTo(hp[0] + (p[0] - hp[0]) * oa, hp[1] + (p[1] - hp[1]) * oa);
+        g.strokeStyle = white(0.22); g.lineWidth = 1; g.stroke();
+        const r = Math.max(2, foc * 0.006 / p[2]);
+        g.beginPath(); g.arc(p[0], p[1], r, 0, two);
+        g.fillStyle = i % 4 === 0 ? red(1) : white(0.9); g.fill();
+      }
+    } else if (s === 2) {
+      pins(['KOREA', 'SINGAPORE', 'THAILAND']);
+    } else if (s === 3) {
+      // 28 registered patents orbiting the hotspot
+      for (let i = 0; i < 28; i++) {
+        const th = i / 28 * two + t * 0.00012;
+        const p = at(Math.cos(th) * 0.46, Math.sin(th) * 0.15, Math.sin(th) * 0.3 - 0.1);
+        if (!p) continue;
+        const r = Math.max(2.5, foc * 0.009 / p[2]) * oa;
+        g.beginPath(); g.moveTo(p[0], p[1] - r); g.lineTo(p[0] + r * 0.7, p[1]); g.lineTo(p[0], p[1] + r); g.lineTo(p[0] - r * 0.7, p[1]); g.closePath();
+        if (i % 7 === 0) { g.fillStyle = red(1); g.fill(); }
+        else { g.strokeStyle = white(0.85); g.lineWidth = 1.2; g.stroke(); }
+      }
+    } else if (s === 4) {
+      // a staircase of years: 2018 to today
+      const years = ['2018', '2019', '2020', '2021', '2022', '2023', '2025', '2026'];
+      for (let i = 0; i < years.length; i++) {
+        const a0 = -0.56 + i * 0.145, a1 = a0 + 0.11;
+        const topY = -0.4 + (0.06 + i * 0.062) * oa;
+        const q = [at(a0, -0.4, -0.08), at(a1, -0.4, -0.08), at(a1, topY, -0.08), at(a0, topY, -0.08)];
+        if (!q[0] || !q[1] || !q[2] || !q[3]) continue;
+        g.beginPath(); g.moveTo(q[0][0], q[0][1]); g.lineTo(q[1][0], q[1][1]); g.lineTo(q[2][0], q[2][1]); g.lineTo(q[3][0], q[3][1]); g.closePath();
+        const lastOne = i === years.length - 1;
+        g.fillStyle = lastOne ? red(0.9) : white(0.07); g.fill();
+        g.strokeStyle = lastOne ? red(1) : white(0.6); g.lineWidth = 1; g.stroke();
+        label(years[i], (q[0][0] + q[1][0]) / 2, q[0][1] + 14, 11, 'center');
+      }
+    } else if (s === 5) {
+      // three latest stories as floating panels
+      const dates = ['2026.11.20', '2026.11.06', '2026.09.08'];
+      const xs = [-0.45, 0, 0.45], cs = [-0.12, 0, -0.12];
+      for (let i = 0; i < 3; i++) {
+        const w = 0.17, h = 0.1, yb = 0.3 + 0.012 * Math.sin(t * 0.001 + i * 2);
+        const q = [at(xs[i] - w, yb + h, cs[i]), at(xs[i] + w, yb + h, cs[i]), at(xs[i] + w, yb - h, cs[i]), at(xs[i] - w, yb - h, cs[i])];
+        if (!q[0] || !q[1] || !q[2] || !q[3]) continue;
+        g.beginPath(); g.moveTo(q[0][0], q[0][1]); g.lineTo(q[1][0], q[1][1]); g.lineTo(q[2][0], q[2][1]); g.lineTo(q[3][0], q[3][1]); g.closePath();
+        g.fillStyle = 'rgba(0,6,12,' + (0.7 * oa).toFixed(3) + ')'; g.fill();
+        g.strokeStyle = i === 0 ? red(1) : white(0.7); g.lineWidth = 1.2; g.stroke();
+        const lx = q[0][0] + (q[1][0] - q[0][0]) * 0.1, wpx = (q[1][0] - q[0][0]) * 0.8;
+        const ty = q[0][1], hy = q[3][1] - q[0][1];
+        label(dates[i], lx, ty + hy * 0.24, 11);
+        g.fillStyle = white(0.55);
+        g.fillRect(lx, ty + hy * 0.5, wpx, 2);
+        g.fillRect(lx, ty + hy * 0.7, wpx * 0.6, 2);
+      }
+    } else if (s === 6) {
+      pins(['WONJU HQ', 'SEOUL R&D', 'SINGAPORE']);
+    }
+  }
+
+  renderVals() {
+    const s = (this.state && this.state.scene) || 0;
+    const accent = this.props.accent ?? '#FF004D';
+    const pos = (ev) => {
+      const b = ev.currentTarget.getBoundingClientRect();
+      return [ev.clientX - b.left, ev.clientY - b.top, b.width, b.height];
+    };
+    return {
+      accent: accent,
+      s0: s === 0, s1: s === 1, s2: s === 2, s3: s === 3, s4: s === 4, s5: s === 5, s6: s === 6,
+      num: '0' + (s + 1),
+      prevLabel: this.names[(s + this.N - 1) % this.N],
+      nextLabel: this.names[(s + 1) % this.N],
+      prev: () => this.go(this.scene - 1),
+      next: () => this.go(this.scene + 1),
+      index: this.names.map((label, i) => ({
+        num: '0' + (i + 1),
+        label: label,
+        current: i === s ? 'true' : 'false',
+        color: i === s ? '#ffffff' : 'rgba(255,255,255,0.62)',
+        line: i === s ? '48px' : '16px',
+        go: () => this.go(i)
+      })),
+      setCanvas: (el) => { if (el) this.cv = el; },
+      onWheel: (ev) => {
+        const now = performance.now();
+        if (now - this.lastWheel < 1100 || Math.abs(ev.deltaY) < 16) return;
+        const to = this.scene + (ev.deltaY > 0 ? 1 : -1);
+        if (to < 0 || to >= this.N) return;
+        this.lastWheel = now;
+        this.go(to);
+      },
+      onDown: (ev) => {
+        const p = pos(ev);
+        this.drag = { x: p[0], y: p[1], moved: 0 };
+        try { ev.currentTarget.setPointerCapture(ev.pointerId); } catch (e) {}
+        ev.currentTarget.style.cursor = 'grabbing';
+      },
+      onMove: (ev) => {
+        const p = pos(ev);
+        if (this.drag) {
+          const dx = p[0] - this.drag.x, dy = p[1] - this.drag.y;
+          this.offY -= dx * 0.0032;
+          this.offP = Math.max(-0.9, Math.min(0.9, this.offP + dy * 0.0028));
+          this.drag.moved += Math.abs(dx) + Math.abs(dy);
+          this.drag.x = p[0]; this.drag.y = p[1];
+        } else {
+          this.px = (p[0] / p[2] - 0.5) * 2;
+          this.py = (p[1] / p[3] - 0.5) * 2;
+        }
+      },
+      onUp: (ev) => {
+        const p = pos(ev);
+        const d = this.drag;
+        this.drag = null;
+        ev.currentTarget.style.cursor = 'grab';
+        if (!d || d.moved > 6) return;
+        let best = -1, bd = 1e9;
+        for (let i = 0; i < this.hs.length; i++) {
+          const h = this.hs[i];
+          if (!h) continue;
+          const dist = Math.hypot(h.x - p[0], h.y - p[1]);
+          if (dist < h.r + 28 && dist < bd) { bd = dist; best = i; }
+        }
+        if (best >= 0) this.go(best);
+      },
+      onLeave: () => { if (!this.drag) { this.px = 0; this.py = 0; } }
+    };
+  }
+}
+</script>
+</body>
+</html>

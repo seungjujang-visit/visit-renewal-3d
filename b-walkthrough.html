@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>VISIT 히어로 대안 B — 워크스루</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./dc-lite.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+body{margin:0;background:#00060C}
+a{color:#ffffff;text-decoration:none}a:hover{color:#FFA2BE}
+a:focus-visible{outline:2px solid #ffffff;outline-offset:3px}
+@keyframes vrise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.vrise{animation:vrise .9s cubic-bezier(.2,.7,.2,1) both}
+@media (prefers-reduced-motion:reduce){.vrise{animation:none}}
+@media (max-width:860px){.v-hide-sm{display:none !important}}
+</style>
+</helmet>
+<div style="position: relative; height: 100vh; min-height: 720px; overflow: hidden; background: #00060C; color: #ffffff; font-family: Pretendard, 'Pretendard Variable', 'Noto Sans KR', sans-serif; font-size: 18px; line-height: 27px">
+
+  <canvas data-stage="walk" ref="{{ setCanvas }}" onPointerMove="{{ onMove }}" onPointerLeave="{{ onLeave }}" role="img" aria-label="실내와 실외 공간을 차례로 통과하며 앞으로 걸어가는 와이어프레임 통로. 바닥에는 이동 궤적과 360 촬영 지점이 표시됩니다." style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block"></canvas>
+
+  <header style="position: absolute; left: 0; right: 0; top: 0; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 28px clamp(20px, 5vw, 72px); pointer-events: none">
+    <a href="#" aria-label="VISIT 홈" style="display: flex; align-items: center; min-height: 44px; pointer-events: auto">
+      <img src="./visit-logo-white.svg" alt="VISIT" style="height: 30px; width: auto; display: block">
+    </a>
+    <nav class="v-hide-sm" aria-label="주 메뉴" style="display: flex; align-items: center; gap: 44px; font-family: Poppins, sans-serif; font-weight: 500; font-size: 18px; pointer-events: auto">
+      <a href="#" style="color: {{accent}}; min-height: 44px; display: flex; align-items: center">Main</a>
+      <a href="#" style="min-height: 44px; display: flex; align-items: center">Business</a>
+      <a href="#" style="min-height: 44px; display: flex; align-items: center">Shop</a>
+      <a href="#" style="min-height: 44px; display: flex; align-items: center">Newsroom</a>
+      <a href="#" style="min-height: 44px; display: flex; align-items: center">Team</a>
+    </nav>
+    <div style="display: flex; align-items: center; gap: 10px; font-family: Poppins, sans-serif; font-weight: 500; font-size: 16px; pointer-events: auto">
+      <a href="#" style="min-height: 44px; display: flex; align-items: center">KR</a>
+      <span aria-hidden="true" style="color: #979797">|</span>
+      <a href="#" style="color: #979797; min-height: 44px; display: flex; align-items: center">EN</a>
+    </div>
+  </header>
+
+  <main class="vrise" style="position: absolute; left: 0; right: 0; top: 46%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; gap: 22px; padding: 0 20px; text-align: center; pointer-events: none; animation-delay: .2s">
+    <p style="margin: 0; font-family: Poppins, sans-serif; font-weight: 600; font-size: 18px; color: {{accent}}">Indoor · Outdoor · 360°</p>
+    <h1 style="margin: 0; font-size: clamp(38px, 5.2vw, 76px); line-height: 1.22; font-weight: 700; letter-spacing: -0.01em">당신의 모든 이동이<br>정보가 되는 곳, <span style="color: {{accent}}">VISIT</span></h1>
+    <p style="margin: 0; max-width: 520px; color: rgba(255,255,255,0.82)">전 세계 실내외 어디든, 내 걸음이 닿는 모든 공간을 실시간으로 빠르게, 360도로 다채롭게.</p>
+    <a href="#" style="display: inline-flex; align-items: center; gap: 6px; min-height: 52px; padding: 0 28px; border-radius: 999px; background: #ffffff; color: #212324; font-weight: 700; font-size: 18px; pointer-events: auto"><span style="color: #D6003F">360VR</span> 서비스 보러가기</a>
+  </main>
+
+  <footer style="position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 0 20px 36px; font-family: Poppins, sans-serif; font-weight: 500; font-size: 14px; letter-spacing: 0.08em; color: #979797; pointer-events: none">
+    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16"></path><path d="M6 14l6 6 6-6"></path></svg>
+    SCROLL DOWN
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#FF004D","options":["#FF004D","#FF5A1F","#FFFFFF"],"section":"브랜드"},"speed":{"editor":"range","default":1,"min":0,"max":3,"step":0.1,"section":"3D 공간"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  px = 0; py = 0; vx = 0; vy = 0; travel = 0; last = 0;
+
+  hex(h) {
+    h = String(h || '#FF004D').replace('#', '');
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    const n = parseInt(h.slice(0, 6), 16);
+    if (isNaN(n)) return [255, 0, 77];
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+
+  componentDidMount() {
+    this.reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    const tick = (t) => {
+      this.raf = requestAnimationFrame(tick);
+      try { this.draw(t); } catch (e) { /* keep the page usable if drawing fails */ }
+    };
+    this.raf = requestAnimationFrame(tick);
+  }
+
+  componentWillUnmount() { cancelAnimationFrame(this.raf); }
+
+  draw(t) {
+    const cv = this.cv || document.querySelector('canvas[data-stage="walk"]');
+    if (!cv) return;
+    this.cv = cv;
+    const W = cv.clientWidth, H = cv.clientHeight;
+    if (!W || !H) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) {
+      cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    }
+    const g = cv.getContext('2d');
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.fillStyle = '#00060C';
+    g.fillRect(0, 0, W, H);
+
+    const acc = this.hex(this.props.accent);
+    const accS = acc[0] + ',' + acc[1] + ',' + acc[2];
+    const speed = this.props.speed == null ? 1 : Number(this.props.speed);
+    const dt = this.last ? Math.min(60, t - this.last) : 16;
+    this.last = t;
+    if (!this.reduce) this.travel += dt * 0.00055 * speed;
+    this.vx += (this.px - this.vx) * 0.05;
+    this.vy += (this.py - this.vy) * 0.05;
+
+    const cx = W / 2 - this.vx * W * 0.06, cy = H * 0.5 - this.vy * H * 0.05;
+    const foc = Math.max(W, H) * 0.62;
+    const camX = this.vx * 0.25, camY = this.vy * 0.12;
+    const proj = (x, y, z) => [cx + foc * (x - camX) / z, cy + foc * (y - camY) / z];
+
+    const N = 16, gap = 0.75, depth = N * gap, FLOOR = 0.55;
+    const two = Math.PI * 2;
+    const gates = [];
+    for (let k = 0; k < N; k++) {
+      let z = (k * gap - this.travel) % depth;
+      if (z < 0) z += depth;
+      z += 0.25;
+      // alternate tight indoor frames and wide outdoor frames
+      const outdoor = (k % 8) >= 4;
+      const hw = outdoor ? 1.55 + 0.25 * Math.sin(k * 1.7) : 0.82 + 0.14 * Math.sin(k * 2.3);
+      const top = outdoor ? -1.25 - 0.2 * Math.cos(k * 1.1) : -0.52 - 0.1 * Math.cos(k * 1.9);
+      gates.push({ k: k, z: z, hw: hw, top: top, outdoor: outdoor });
+    }
+    gates.sort((a, b) => b.z - a.z);
+    const alphaOf = (z) => {
+      const far = Math.max(0, 1 - z / (depth * 0.95));
+      const near = Math.min(1, Math.max(0, (z - 0.3) / 0.6));
+      return far * near;
+    };
+
+    // floor trail: every step becomes data
+    for (let j = 0; j < 64; j++) {
+      let z = (j * 0.19 - this.travel) % depth;
+      if (z < 0) z += depth;
+      z += 0.25;
+      const a = alphaOf(z);
+      if (a <= 0.02) continue;
+      const side = (j % 2 ? 1 : -1) * 0.07;
+      const p = proj(side, FLOOR, z);
+      const r = Math.max(0.8, Math.min(7, foc * 0.012 / z));
+      g.beginPath();
+      g.ellipse(p[0], p[1], r, r * 0.38, 0, 0, two);
+      g.fillStyle = 'rgba(' + accS + ',' + (0.9 * a).toFixed(3) + ')';
+      g.fill();
+    }
+
+    g.lineJoin = 'round';
+    let prev = null;
+    for (let i = 0; i < gates.length; i++) {
+      const gt = gates[i], a = alphaOf(gt.z);
+      const c = [proj(-gt.hw, gt.top, gt.z), proj(gt.hw, gt.top, gt.z), proj(gt.hw, FLOOR, gt.z), proj(-gt.hw, FLOOR, gt.z)];
+      gt.c = c; gt.a = a;
+      // walls between neighbouring frames
+      if (prev && Math.abs(prev.z - gt.z) < gap * 1.5) {
+        const wa = Math.min(a, prev.a) * 0.32;
+        if (wa > 0.01) {
+          g.strokeStyle = 'rgba(255,255,255,' + wa.toFixed(3) + ')';
+          g.lineWidth = 1;
+          g.beginPath();
+          for (let q = 0; q < 4; q++) { g.moveTo(prev.c[q][0], prev.c[q][1]); g.lineTo(c[q][0], c[q][1]); }
+          g.stroke();
+        }
+      }
+      if (a > 0.01) {
+        g.strokeStyle = 'rgba(255,255,255,' + (0.7 * a).toFixed(3) + ')';
+        g.lineWidth = Math.max(1, Math.min(2.5, foc * 0.004 / gt.z));
+        g.beginPath();
+        g.moveTo(c[0][0], c[0][1]); g.lineTo(c[1][0], c[1][1]); g.lineTo(c[2][0], c[2][1]); g.lineTo(c[3][0], c[3][1]); g.closePath();
+        g.stroke();
+        // 360 capture point at the start of each indoor / outdoor stretch
+        if (gt.k % 4 === 0) {
+          const p = proj(0, FLOOR, gt.z);
+          const rx = foc * 0.2 / gt.z;
+          g.beginPath(); g.ellipse(p[0], p[1], rx, rx * 0.3, 0, 0, two);
+          g.strokeStyle = 'rgba(' + accS + ',' + a.toFixed(3) + ')';
+          g.lineWidth = 2; g.stroke();
+          g.beginPath(); g.ellipse(p[0], p[1], rx * 0.3, rx * 0.09, 0, 0, two);
+          g.fillStyle = 'rgba(' + accS + ',' + a.toFixed(3) + ')'; g.fill();
+          g.font = '500 ' + Math.max(11, Math.min(16, foc * 0.02 / gt.z)).toFixed(1) + 'px Poppins, sans-serif';
+          g.fillStyle = 'rgba(255,255,255,' + (0.85 * a).toFixed(3) + ')';
+          g.textBaseline = 'bottom';
+          g.fillText(gt.outdoor ? 'OUTDOOR' : 'INDOOR', c[0][0] + 10, c[0][1] - 8);
+        }
+      }
+      prev = gt;
+    }
+
+    // legibility scrim behind the centred copy
+    const sg = g.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, Math.max(W, H) * 0.42);
+    sg.addColorStop(0, 'rgba(0,6,12,0.86)');
+    sg.addColorStop(0.55, 'rgba(0,6,12,0.5)');
+    sg.addColorStop(1, 'rgba(0,6,12,0)');
+    g.fillStyle = sg;
+    g.fillRect(0, 0, W, H);
+  }
+
+  renderVals() {
+    return {
+      accent: this.props.accent ?? '#FF004D',
+      setCanvas: (el) => { if (el) this.cv = el; },
+      onMove: (ev) => {
+        const b = ev.currentTarget.getBoundingClientRect();
+        this.px = ((ev.clientX - b.left) / b.width - 0.5) * 2;
+        this.py = ((ev.clientY - b.top) / b.height - 0.5) * 2;
+      },
+      onLeave: () => { this.px = 0; this.py = 0; }
+    };
+  }
+}
+</script>
+</body>
+</html>
