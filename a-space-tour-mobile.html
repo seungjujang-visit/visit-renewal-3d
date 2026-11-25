@@ -127,19 +127,13 @@ button:focus-visible,a:focus-visible{outline:2px solid #ffffff;outline-offset:3p
 
   </main>
 
-  <footer style="position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; padding: 0 20px 28px">
-    <button type="button" onClick="{{ prev }}" style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-width: 96px; min-height: 48px; padding: 0 0 8px; border: 0; border-bottom: 1px solid rgba(255,255,255,0.7); background: transparent; color: #ffffff; text-align: left">
-      <span style="font-family: Poppins, sans-serif; font-weight: 500; font-size: 16px">Prev</span>
-      <span style="font-family: Poppins, sans-serif; font-weight: 500; font-size: 12px; color: #979797">{{ prevLabel }}</span>
-    </button>
-    <div style="display: flex; align-items: baseline; gap: 8px; padding-bottom: 8px; font-family: Poppins, sans-serif; font-weight: 500">
+  <footer style="position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 20px 28px">
+    <button type="button" onClick="{{ prev }}" aria-label="이전" style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; padding: 0; border: 1px solid rgba(255,255,255,0.7); border-radius: 50%; background: transparent; color: #ffffff; cursor: pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+    <div style="display: flex; align-items: baseline; gap: 8px; font-family: Poppins, sans-serif; font-weight: 500">
       <span style="font-size: 24px; line-height: 1">{{ num }}</span>
       <span style="font-size: 13px; color: #979797">/ 07</span>
     </div>
-    <button type="button" onClick="{{ next }}" style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px; min-width: 96px; min-height: 48px; padding: 0 0 8px; border: 0; border-bottom: 1px solid {{accent}}; background: transparent; color: #ffffff; text-align: right">
-      <span style="font-family: Poppins, sans-serif; font-weight: 500; font-size: 16px">Next</span>
-      <span style="font-family: Poppins, sans-serif; font-weight: 500; font-size: 12px; color: #979797">{{ nextLabel }}</span>
-    </button>
+    <button type="button" onClick="{{ next }}" aria-label="다음" style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; padding: 0; border: 1px solid {{accent}}; border-radius: 50%; background: transparent; color: #ffffff; cursor: pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
   </footer>
 
   <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
@@ -480,18 +474,63 @@ class Component extends DCLogic {
         else { g.strokeStyle = white(0.85); g.lineWidth = 1.2; g.stroke(); }
       }
     } else if (s === 4) {
-      // a staircase of years: 2018 to today
-      const years = ['2018', '2019', '2020', '2021', '2022', '2023', '2025', '2026'];
-      for (let i = 0; i < years.length; i++) {
-        const a0 = -0.56 + i * 0.145, a1 = a0 + 0.11;
-        const topY = -0.4 + (0.06 + i * 0.062) * oa;
-        const q = [at(a0, -0.4, -0.08), at(a1, -0.4, -0.08), at(a1, topY, -0.08), at(a0, topY, -0.08)];
-        if (!q[0] || !q[1] || !q[2] || !q[3]) continue;
-        g.beginPath(); g.moveTo(q[0][0], q[0][1]); g.lineTo(q[1][0], q[1][1]); g.lineTo(q[2][0], q[2][1]); g.lineTo(q[3][0], q[3][1]); g.closePath();
-        const lastOne = i === years.length - 1;
-        g.fillStyle = lastOne ? red(0.9) : white(0.07); g.fill();
-        g.strokeStyle = lastOne ? red(1) : white(0.6); g.lineWidth = 1; g.stroke();
-        label(years[i], (q[0][0] + q[1][0]) / 2, q[0][1] + 14, 11, 'center');
+      // growth: a translucent arrow rising to the upper right,
+      // with a soft area fill and a ribbon of fine echo lines beneath it
+      const cw = g.canvas.clientWidth || 99999;
+      // keep both ends of the arrow inside the viewport on narrow screens
+      let hw = 0.56;
+      for (let k = 0; k < 14; k++) {
+        const pe = at(hw, 0.14, -0.08), ps = at(-hw, -0.28, -0.08);
+        if (pe && ps && pe[0] < cw - 40 && ps[0] > 28) break;
+        hw *= 0.88;
+      }
+      const rise = 0.42 * Math.max(0.6, hw / 0.56);
+      const n = Math.max(2, Math.round(40 * oa));
+      const curve = (k) => {
+        const pts = [];
+        for (let i = 0; i <= n; i++) {
+          const u = i / 40;
+          const p = at(-hw + u * hw * 2, -0.28 + rise * k * Math.pow(u, 1.8), -0.08);
+          if (p) pts.push(p);
+        }
+        return pts;
+      };
+      const trace = (pts) => {
+        g.beginPath(); g.moveTo(pts[0][0], pts[0][1]);
+        for (let i = 1; i < pts.length; i++) g.lineTo(pts[i][0], pts[i][1]);
+      };
+      const pts = curve(1);
+      if (pts.length > 1) {
+        const s0 = pts[0], e = pts[pts.length - 1], b = pts[pts.length - 2];
+        const fade = (a) => {
+          const lg = g.createLinearGradient(s0[0], 0, e[0], 0);
+          lg.addColorStop(0, red(0)); lg.addColorStop(1, red(a));
+          return lg;
+        };
+        g.lineCap = 'round'; g.lineJoin = 'round';
+        // area under the curve, fading downwards
+        const ag = g.createLinearGradient(0, e[1], 0, s0[1]);
+        ag.addColorStop(0, red(0.2)); ag.addColorStop(1, red(0));
+        trace(pts); g.lineTo(e[0], s0[1]); g.closePath();
+        g.fillStyle = ag; g.fill();
+        // echo lines
+        for (let j = 1; j <= 4; j++) {
+          const ep = curve(1 - j * 0.17);
+          if (ep.length < 2) continue;
+          trace(ep); g.strokeStyle = fade(0.3 - j * 0.055); g.lineWidth = 1; g.stroke();
+        }
+        // main line and open arrowhead
+        const ang = Math.atan2(e[1] - b[1], e[0] - b[0]);
+        const hd = Math.max(11, foc * 0.04 / e[2]);
+        g.shadowColor = red(0.6); g.shadowBlur = 14;
+        trace(pts); g.strokeStyle = fade(0.6); g.lineWidth = 2; g.stroke();
+        g.beginPath();
+        g.moveTo(e[0] + Math.cos(ang + 2.5) * hd, e[1] + Math.sin(ang + 2.5) * hd);
+        g.lineTo(e[0], e[1]);
+        g.lineTo(e[0] + Math.cos(ang - 2.5) * hd, e[1] + Math.sin(ang - 2.5) * hd);
+        g.strokeStyle = red(0.6); g.stroke();
+        g.shadowBlur = 0; g.shadowColor = 'transparent';
+        g.lineCap = 'butt'; g.lineJoin = 'miter';
       }
     } else if (s === 5) {
       // three latest stories as floating panels
